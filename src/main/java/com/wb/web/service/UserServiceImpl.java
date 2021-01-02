@@ -1,8 +1,10 @@
 package com.wb.web.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +103,26 @@ public class UserServiceImpl implements UserService {
 		
 		
 		
+		return resultMap;
+	}
+	
+	public 	HashMap<String, Object> updateUser(User user){
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+			Optional<User> currUser = userRepository.findById(user.getId());
+			if(!currUser.isEmpty()) {
+				userRepository.save(user);
+				resultMap.put("result", "success");
+			}else {
+				resultMap.put("result", "success");
+				resultMap.put("error", "User doesn't exist.");
+			}
+			
+		} catch (Exception e) {
+			resultMap.put("result","failed");
+			resultMap.put("error", e.getMessage());
+		}
+	
 		return resultMap;
 	}
 	
@@ -253,5 +275,51 @@ public class UserServiceImpl implements UserService {
 		return resultMap;
 	}
 	
+	public 	HashMap<String, Object> getScaledUserWebmons(Long userId){
+		HashMap<String,Object> resultMap = new HashMap<>();
+		try {
+			Optional<User> user = userRepository.findById(userId);
+			if(!user.isEmpty()) {
+				Collection<UserWebmon> userWebmons = user.get().getUserWebmon();
+	
+				if(!userWebmons.isEmpty()) {
+					
+					List scaledWebmons = new ArrayList();
+					
+					for (UserWebmon userWebmon : userWebmons) {
+						HashMap<String,Object> tempResult = new HashMap<>();
+						
+						Long level = userWebmon.getLevel();
+						int scale = (int) (level * 0.2 + 1);
+						tempResult.put("name", userWebmon.getName());
+						tempResult.put("level", userWebmon.getLevel());
+						tempResult.put("webmon", userWebmon.getWebmon().getName());
+						tempResult.put("type", userWebmon.getWebmon().getType());
+						tempResult.put("rating", userWebmon.getWebmon().getRating());
+						tempResult.put("attribute", userWebmon.getWebmon().getAttribute());
+						tempResult.put("attack", userWebmon.getWebmon().getAttack() * scale);
+						tempResult.put("health", userWebmon.getWebmon().getHealth() * scale);
+						tempResult.put("physicalDefense", userWebmon.getWebmon().getPhysicalDefense() * scale);
+						tempResult.put("magicDefense", userWebmon.getWebmon().getMagicDefense() * scale);
+						
+						scaledWebmons.add(tempResult);
+					}
+					resultMap.put("result", "sucess");
+					resultMap.put("scaledUserWebmons", scaledWebmons);
+					
+				}else {
+					resultMap.put("result", "failed");
+					resultMap.put("error", "User doesn't own any webmons");
+				}
+			}else {
+				resultMap.put("result", "failed");
+				resultMap.put("error", "User doesn't exist.");
+			}
+		} catch (Exception e) {
+			resultMap.put("result", "failed");
+			resultMap.put("error", e.getMessage());
+		}
+		return resultMap;
+	}
 	
 }

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ColumnDirective, ColumnsDirective, GridComponent, Inject, Page } from '@syncfusion/ej2-react-grids';
 import { 
   Button, 
-  Grid, LinearProgress,
+  Grid, LinearProgress, Tooltip,
   Dialog, DialogActions, DialogContent, DialogContentText,DialogTitle, Snackbar, IconButton
 } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -147,6 +147,7 @@ class WebmonsTab extends React.Component{
   handleOpenDeleteDialog(props){
     this.setState({openDeleteDialog:true, webmonToDelete: props.webmonId})
   }
+
   handleOpenEditDialog(props){
     let state = {};
     let inputField = {};
@@ -210,7 +211,7 @@ class WebmonsTab extends React.Component{
           that.getWebmons();
           that.grid.refresh();
           that.handleCloseDeleteDialog();
-          that.setState({dialogProgressDelete:true, snackBarSuccess: true, snackBarMessage:"Webmon successfully deleted!"})
+          that.setState({snackBarSuccess: true, snackBarMessage:"Webmon successfully deleted!"})
         }
       },
       error: function(error){
@@ -273,8 +274,9 @@ class WebmonsTab extends React.Component{
             that.setState({formErrorMessage: response.error});
           }
         },
-        error: function(error){
-
+        error: function(xhr){
+          const errorMessage = xhr.responseJSON.status + " " + xhr.responseJSON.error;
+          that.setState({formErrorMessage: errorMessage, dialogProgress:false});
         }
       })
     }
@@ -292,14 +294,18 @@ class WebmonsTab extends React.Component{
         <Grid item sm="2" className="d-none d-sm-flex">{props.attribute}</Grid>
         <Grid item xs="5" sm="2">
           <div>
-            <IconButton size="small" color="primary" 
-              onClick={()=>{this.handleOpenEditDialog(props)}} 
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={()=>{this.handleOpenDeleteDialog(props)}} size="small" color="secondary">
-              <DeleteIcon />
-            </IconButton>
+            <Tooltip title="Edit" arrow>
+              <IconButton size="small" color="primary" 
+                onClick={()=>{this.handleOpenEditDialog(props)}}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" arrow>
+              <IconButton onClick={()=>{this.handleOpenDeleteDialog(props)}} size="small" color="secondary">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            
           </div>
         </Grid>
       </Grid>

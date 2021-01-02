@@ -5,12 +5,13 @@ import { ColumnDirective, ColumnsDirective, GridComponent, Inject, Page } from '
 import { 
   Button, 
   Grid, LinearProgress,
-  Dialog, DialogActions, DialogContent, DialogContentText,DialogTitle, Snackbar, IconButton
+  Dialog, DialogActions, DialogContent, DialogContentText,DialogTitle, Snackbar, IconButton, Tooltip
 } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ViewListIcon from '@material-ui/icons/ViewList';
 import "../../../css/common.css";
 import "../../../css/override-ej2.css";
 
@@ -24,11 +25,16 @@ class UsersTabs extends React.Component{
       users:[],
       userWebmons:[],
       openDialog: false,
+      openWebmonsDialog: false,
+      openDeleteDialog: false,
       isCreateDialog: true,
       formErrorMessage: "",
       dialogProgress: false,
+      dialogProgressDelete: false,
       snackBarSuccess:false,
       snackBarMessage:"",
+      userToDelete: "",
+      webmonsUser:"",
       inputFields:{
         userId: "",
         name: "",
@@ -61,12 +67,41 @@ class UsersTabs extends React.Component{
 
     });
   }
+
   componentDidMount(){
    this.getUsers();
   }
+
+  getUserWebmons(id){
+    let that = this;
+    $.ajax({
+      url:"getScaledUserWebmons",
+      data:{
+        userId: id
+      },
+      type: "GET",
+      success: function(response){
+        if(response.result === "sucess"){
+          that.setState({userWebmons: response.scaledUserWebmons})
+        }
+      },
+      error: function(error){
+        console.log(error);
+      }
+
+    });
+  }
   
   handleCloseDialog(){
-    this.setState({openDialog:false, formErrorMessage:""})
+    this.setState({openDialog:false, formErrorMessage:"",isCreateDialog:true,
+    inputError:{
+      uName: false,
+      uEmail: false },
+    inputFields:{
+      userId: "",
+      name: "",
+      email: "",}})
+    this.userFormRef.reset();
   }
 
   handleAddUpdateUser(){
@@ -128,35 +163,109 @@ class UsersTabs extends React.Component{
             
           }
         },
-        error: function(error){
-
+        error: function(xhr){
+          const errorMessage = xhr.responseJSON.status + " " + xhr.responseJSON.error;
+          that.setState({formErrorMessage: errorMessage, dialogProgress:false});
         }
       })
     }
   }
 
+  handleDeleteUser(){
+    const that = this;
+    $.ajax({
+      url: "deleteUser",
+      data: {
+        userId: this.state.userToDelete
+      },
+      type: 'DELETE',
+      success: function(response){
+        if(response.result === "success"){
+          that.getUsers();
+          that.grid.refresh();
+          that.handleCloseDeleteDialog();
+          that.setState({snackBarSuccess: true, snackBarMessage:"User successfully deleted!"})
+        }
+      },
+      error: function(xhr){
+          const errorMessage = xhr.responseJSON.status + " " + xhr.responseJSON.error;
+          that.setState({formErrorMessage: errorMessage, dialogProgress:false});
+      }
+    })
+  }
+
+  handleOpenEditDialog(props){
+    let state = {};
+    let inputField = {};
+    inputField['userId'] = props.id;
+    inputField['name'] = props.name;
+    inputField['email'] = props.email;
+    state['inputFields'] = inputField;
+    state['isCreateDialog'] = false;
+    state['openDialog'] = true;
+    this.setState(state);
+    
+  }
+  handleOpenWebmonsDialog(props){
+    this.setState({webmonsUser: props.id, openWebmonsDialog:true});
+    this.getUserWebmons(props.id);
+    
+  }
   
+  handleOpenDeleteDialog(props){
+    this.setState({openDeleteDialog:true, userToDelete: props.id})
+  }
 
+  handleCloseDeleteDialog(){
+    this.setState({formErrorMessage:"",openDeleteDialog:false, userToDelete:0, dialogProgressDelete:false})
+  }
 
+  handleCloseWebmonsDialog(){
+    this.setState({openWebmonsDialog:false})
+  }
+
+  // renderWebmons(){
+
+  //   if(this.state.userWebmons){
+  //     this.state.userWebmons.map((webmon) => {
+  //       console.log(webmon.name)
+  //       return <div>{webmon.name}</div>
+  //     })
+  //   }else{
+  //     return<div>User doesn't own any webmons.</div>
+  //   }
+  // }
+  
   gridTemplate(props) {
   const { classes } = this.props;
   return (
     <Grid container className={classes.templateGrid}>
       <Grid item sm="1" className="d-none d-sm-block">{props.id}</Grid>
-      <Grid item xs="7" sm="5">{props.name}</Grid>
+      <Grid item xs="7" sm="3">{props.name}</Grid>
       <Grid item sm="4" className="d-none d-sm-block">{props.email}</Grid>
-      <Grid item xs="5" sm="2">
+      <Grid item xs="2" sm="2">
+        <Tooltip title="Show owned webmons" arrow>
+            <IconButton size="small" color="primary"
+              onClick={()=>{this.handleOpenWebmonsDialog(props)}}>
+              <ViewListIcon />
+            </IconButton>
+          </Tooltip>
+      </Grid>
+      <Grid item xs="3" sm="2">
         <div>
-          <IconButton size="small" color="primary" 
-            // onClick={()=>{this.handleOpenEditDialog(props)}} 
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton 
-          // onClick={()=>{this.handleOpenDeleteDialog(props)}} 
-          size="small" color="secondary">
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title="Edit" arrow>
+            <IconButton size="small" color="primary" 
+              onClick={()=>{this.handleOpenEditDialog(props)}}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete" arrow>
+            <IconButton size="small" color="secondary"
+              onClick={()=>{this.handleOpenDeleteDialog(props)}}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </Grid>
     </Grid>
@@ -231,9 +340,10 @@ class UsersTabs extends React.Component{
             <div className="grid-header e-grid">
                 <Grid container>
                   <Grid item sm="1" className="d-none d-sm-block">ID</Grid>
-                  <Grid item xs="7" sm="5">Name</Grid>
+                  <Grid item xs="7" sm="3">Name</Grid>
                   <Grid item sm="4" className="d-none d-sm-block">Email</Grid>
-                  <Grid item xs="5" sm="2">Action</Grid>
+                  <Grid item xs="2" sm="2">Webmons</Grid>
+                  <Grid item xs="4" sm="2">Action</Grid>
                 </Grid>
               </div>
             <GridComponent 
@@ -251,6 +361,45 @@ class UsersTabs extends React.Component{
           </div>
           
         </div>
+
+        <Dialog
+          open={this.state.openDeleteDialog}
+          onClose={this.handleCloseDeleteDialog.bind(this)}>
+          <DialogTitle>{"Confirm Delete User"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              All owned webmons of this user will also be removed. Are you sure you want to continue?
+            </DialogContentText>
+          </DialogContent>
+
+          <LinearProgress className="mt-3" style={{display: this.state.dialogProgressDelete ? "block":"none"}} />
+          <DialogActions>
+            <Button size="small" variant="contained" onClick={this.handleCloseDeleteDialog.bind(this)} color="default">
+              Cancel
+            </Button>
+            <Button size="small" variant="contained" onClick={this.handleDeleteUser.bind(this)} color="primary" autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog> 
+
+        <Dialog open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
+          <DialogTitle>User Webmons</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {/* {this.renderWebmons()}
+              {this.state.userWebmons.map((webmon) => {
+
+                return <div>{webmon.name}</div>
+              })} */}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseWebmonsDialog.bind(this)} color="default">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
       
     )

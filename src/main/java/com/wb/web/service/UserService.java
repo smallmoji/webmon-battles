@@ -15,6 +15,8 @@ public interface UserService {
 	
 	HashMap<String,Object> newUser(User user);
 	
+	HashMap<String, Object> updateUser(User user);
+	
 	HashMap<String,Object> deleteUser(Long userId);
 	
 	HashMap<String,Object> deleteUserWebmon(Long userId, Long userWebmonId);
@@ -22,4 +24,6 @@ public interface UserService {
 	HashMap<String, Object> newUserWebmon(Long userId, Long webmonId, String name);
 	
 	HashMap<String, Object> updateUserWebmon(UserWebmon userWebmon);
+	
+	HashMap<String, Object> getScaledUserWebmons(Long userId);
 }

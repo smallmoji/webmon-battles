@@ -47,6 +47,19 @@ public class HomeController {
 		return userService.newUser(user);
 	}
 	
+	@RequestMapping("/updateUser")
+	HashMap<String, Object> updateUser(
+			@RequestParam("userId")Long id,
+			@RequestParam("name")String name,
+			@RequestParam("email") String email){
+		
+		User user = new User();
+		user.setId(id);
+		user.setName(name);
+		user.setEmail(email);
+		return userService.updateUser(user);
+	}
+	
 	@RequestMapping("/createUserWebmon")
 	HashMap<String, Object> newUserWebmon(
 			@RequestParam("webmonId")Long webmonId,
@@ -74,5 +87,12 @@ public class HomeController {
 
 		return userService.deleteUserWebmon(userId, userWebmonId);
 	}
+	
+	@RequestMapping("/getScaledUserWebmons")
+	HashMap<String, Object> getScaledUserWebmons(
+			@RequestParam("userId")Long userId){
+		return userService.getScaledUserWebmons(userId);
+	}
+	
 	
 }

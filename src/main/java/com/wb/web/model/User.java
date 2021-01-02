@@ -27,8 +27,8 @@ public class User {
 	
 	@OneToMany(
 	    mappedBy = "user",
-	    cascade = CascadeType.ALL,
-	    orphanRemoval = true
+	    cascade = CascadeType.ALL
+	   // orphanRemoval = true
 	)
 	private Collection<UserWebmon> userWebmon;
 	
