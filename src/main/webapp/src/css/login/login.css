@@ -1,0 +1,16 @@
+.login-main{
+  background-color: #020f2a;
+  height: 100vh;
+}
+.login-box{
+  background-color: #fff;
+  padding: 20px;
+}
+
+.user-select-wrapper{
+  overflow: hidden;
+}
+
+.user-select{
+  transition: transform .2s;
+}

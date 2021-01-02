@@ -1,0 +1,72 @@
+.orange-button{
+  background-color: #fb8e27;
+  padding: 10px;
+  border-radius: 5px;
+  color: #e6e3e3;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all .2s;
+  border: 1px solid #686868;
+  /* border:0; */
+}
+.orange-button:hover{
+  background-color: #ec7e16;
+}
+
+.orange-button:focus{
+  outline: none;
+}
+
+.flex-center{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-error{
+  border: 1px solid #f44336 !important;
+  color: #f44336 !important;
+}
+
+.input-error::placeholder{
+  color: #f44336 !important;
+}
+
+.small-icon{
+  width: 24px;
+  height: 24px;
+}
+
+.grid-header{
+    background-color: #fff;
+    border-bottom-color: #e0e0e0;
+    border-top-color: #e0e0e0;
+    color: rgba(0, 0, 0, 0.54);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-top-style: solid;
+    border-top-width: 1px;
+    font-size: 13px;
+    line-height: 20px;
+    padding: 8px 21px;
+}
+
+/* .progress-wrapper{
+  width: auto;
+  height: auto;
+  position: relative;
+}
+
+.progress-overlay{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(61, 60, 60,0.5);
+  z-index: 999;
+}
+ */
