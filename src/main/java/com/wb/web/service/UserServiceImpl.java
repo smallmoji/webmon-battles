@@ -291,6 +291,7 @@ public class UserServiceImpl implements UserService {
 						
 						Long level = userWebmon.getLevel();
 						int scale = (int) (level * 0.2 + 1);
+						tempResult.put("id",userWebmon.getId());
 						tempResult.put("name", userWebmon.getName());
 						tempResult.put("level", userWebmon.getLevel());
 						tempResult.put("webmon", userWebmon.getWebmon().getName());

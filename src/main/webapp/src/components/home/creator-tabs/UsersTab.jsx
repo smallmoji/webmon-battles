@@ -338,6 +338,24 @@ class UsersTabs extends React.Component{
     this.handleCloseAddEditUserWebmon();
   }
   
+  handleDeleteUserWebmon(id){
+    const that = this;
+    $.ajax({
+      url: "deleteUserWebmon",
+      data: {userId: this.state.webmonsUser, userWebmonId: id},
+      type: "DELETE",
+      success: function(response){
+        if(response.result === "success"){
+          that.getUserWebmons(that.state.webmonsUser);
+          that.setState({snackBarSuccess:true, snackBarMessage:"Webmon successfully deleted!"});
+        }
+      },
+      error: function(xhr){
+
+      }
+
+    })
+  }
   gridTemplate(props) {
   const { classes } = this.props;
   return (
@@ -488,7 +506,7 @@ class UsersTabs extends React.Component{
           </DialogActions>
         </Dialog> 
 
-        <Dialog className={classes.noButtonOutline} open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
+        <Dialog maxWidth="md" className={classes.noButtonOutline} open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
           <DialogTitle>User Webmons 
             <IconButton className="float-right" onClick={this.handleOpenAddUmon.bind(this)}>
               <AddCircleOutlineIcon />
@@ -588,6 +606,9 @@ class UsersTabs extends React.Component{
                         <CardActions className={classes.noButtonOutline}>
                           <Button variant="text" color="default">
                             Edit
+                          </Button>
+                          <Button variant="text" color="secondary" onClick={()=>{this.handleDeleteUserWebmon(webmon.id)}}>
+                            Delete
                           </Button>
                         </CardActions>
                       </Card>
