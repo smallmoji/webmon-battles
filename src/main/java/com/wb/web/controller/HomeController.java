@@ -64,9 +64,10 @@ public class HomeController {
 	HashMap<String, Object> newUserWebmon(
 			@RequestParam("webmonId")Long webmonId,
 			@RequestParam("userId")Long userId,
-			@RequestParam("name") String name){
+			@RequestParam("name") String name,
+			@RequestParam("level")Long level){
 
-		return userService.newUserWebmon(userId, webmonId, name);
+		return userService.newUserWebmon(userId, webmonId, name, level);
 	}
 	
 	@RequestMapping("/updateUserWebmon")

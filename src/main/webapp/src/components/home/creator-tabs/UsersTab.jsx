@@ -54,7 +54,9 @@ class UsersTabs extends React.Component{
         name: "",
         email: "",
         umWebmon: "",
-        umName: ""
+        umName: "",
+        umId:"",
+        umLevel:""
       },
       inputError:{
         uName: false,
@@ -70,7 +72,8 @@ class UsersTabs extends React.Component{
   }
 
   componentDidMount(){
-   this.getUsers();
+    this.getUsers();
+    this.getWebmons();
   }
 
   getUsers(){
@@ -228,12 +231,14 @@ class UsersTabs extends React.Component{
       this.setState(errorState)
       this.setState({uMonErormErrorMessage: ""});
     }else{
-      formData.append("userId",this.state.webmonsUser)
+
+
       if(this.state.isAddUserWebmon){
         url = "createUserWebmon";
-        formData.delete("level");
+        formData.append("userId",this.state.webmonsUser); 
       }else{
         url = "updateUserWebmon"
+        formData.append("userWebmonId",this.state.inputFields.umId);
       }
 
       this.setState({dialogProgress:true})
@@ -247,10 +252,9 @@ class UsersTabs extends React.Component{
           if(response.result === "success"){
             ;
             that.setState({snackBarSuccess:true, dialogProgress:false})
-
+            that.getUserWebmons(that.state.webmonsUser)
             if(that.state.isAddUserWebmon){
               that.setState({snackBarMessage:"Webmon successfully added!"});
-              that.getUserWebmons(formData.get("userId"))
             }else{
               that.setState({snackBarMessage:"Webmon successfully updated!"})
             }
@@ -274,13 +278,30 @@ class UsersTabs extends React.Component{
   }
 
   handleOpenAddUmon(){
-    this.getWebmons();
-    this.setState({openAddEditWebmon:true})
+    this.setState({openAddEditWebmon:true, isAddUserWebmon:true})
+  }
 
+  handleOpenEditUmon(){
+    this.setState({openAddEditWebmon:true, isAddUserWebmon:false})
   }
 
   handleCloseAddEditUserWebmon(){
-    this.setState({openAddEditWebmon:false})
+    this.setState({openAddEditWebmon:false, inputFields:{
+        userId: "",
+        name: "",
+        email: "",
+        umWebmon: "",
+        umName: "",
+        umId:"",
+        umLevel:""
+      },
+      inputError:{
+        uName: false,
+        uEmail: false,
+        umWebmon: false,
+        umName: ""
+        
+      }})
   }
 
   handleDeleteUser(){
@@ -356,6 +377,23 @@ class UsersTabs extends React.Component{
 
     })
   }
+
+  handleEditUserWebmon(webmon){
+    let state = {};
+    let inputField = {};
+    inputField['umWebmon'] = webmon.webmonId;
+    inputField['umName'] = webmon.name;
+    inputField['umLevel'] = webmon.level;
+    inputField['umId'] = webmon.id;
+    state['inputFields'] = inputField;
+    state['isAddUserWebmon'] = false;
+    this.setState(state);
+
+    this.handleOpenEditUmon();
+
+    
+  }
+
   gridTemplate(props) {
   const { classes } = this.props;
   return (
@@ -506,16 +544,18 @@ class UsersTabs extends React.Component{
           </DialogActions>
         </Dialog> 
 
-        <Dialog maxWidth="md" className={classes.noButtonOutline} open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
+        <Dialog maxWidth="sm" className={classes.noButtonOutline} open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
           <DialogTitle>User Webmons 
             <IconButton className="float-right" onClick={this.handleOpenAddUmon.bind(this)}>
               <AddCircleOutlineIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {this.state.openAddEditWebmon ? 
-              <form id="userWebmonForm" ref={(el) => this.webmonFormRef = el}>
+          <DialogContent >
+          
+          {this.state.openAddEditWebmon ? 
+          <form id="userWebmonForm" ref={(el) => this.webmonFormRef = el} style={{position:"absolute",zIndex:"3", top:"14%",left:"0"}}>
+            <Card>
+              <CardContent>
                 <Grid container spacing={1}>
                   <Grid item xs={12} style={{display: this.state.uMonErormErrorMessage ? "block" : "none"}}>
                     <div className="alert alert-danger">{this.state.uMonErormErrorMessage}</div>
@@ -524,8 +564,8 @@ class UsersTabs extends React.Component{
                   <Grid item xs="12">
                     <div className="form-group mb-0">
                       <label for="umWebmon">Webmon</label>
-                      <select id="umWebmon" defaultValue={this.state.inputFields.umWebmon} name="webmonId" className={"form-control " + (this.state.inputError.umWebmon ? "is-invalid" : "")}>
-                        <option value="" selected>Choose...</option>
+                      <select disabled={!this.state.isAddUserWebmon} id="umWebmon" defaultValue={this.state.inputFields.umWebmon} name="webmonId" className={"form-control " + (this.state.inputError.umWebmon ? "is-invalid" : "")}>
+                        <option>Choose...</option>
                         {this.state.webmons.map((item)=>{
                             return <option key={item.key} data-tokens={item.name} value={item.webmonId}>{item.name}</option>
                         })}
@@ -558,14 +598,19 @@ class UsersTabs extends React.Component{
 
                   <Grid item xs="12">
                     <LinearProgress className="my-3" style={{display: this.state.dialogProgress ? "block":"none"}} />
-
-                    <Button className="mr-2" variant="contained" color="primary" size="small" onClick={this.handleAddEditUserWebmon.bind(this)}>Add</Button>
-                    <Button variant="contained" color="default" size="small" onClick={this.handleCloseAddEditUserWebmon.bind(this)}>Cancel</Button>
                   </Grid>
 
                 </Grid>
-              </form> : ""}
-            </DialogContentText>
+              </CardContent>
+              <CardActions>
+                <Button className="mr-2" variant="contained" color="primary" size="small" onClick={this.handleAddEditUserWebmon.bind(this)}>
+                  {this.state.isAddUserWebmon ? "Add" : "Update"}</Button>
+                <Button variant="contained" color="default" size="small" onClick={this.handleCloseAddEditUserWebmon.bind(this)}>Cancel</Button>
+              </CardActions>
+            </Card>
+            
+          </form> : ""}
+            
 
             <Grid container spacing={1}>
               {arrayCount > 0 ? <Grid container spacing={1}>
@@ -576,7 +621,10 @@ class UsersTabs extends React.Component{
                           <Grid container spacing={1}>
                             <Grid xs="12" item>
                               <span className="mr-2" style={{fontSize:"x-large"}}>{webmon.name}</span> 
-                              <span className="font-italic">Lv.{webmon.level} {webmon.webmon}</span>
+                              <span className="font-italic">Lv.{webmon.level}</span>
+                            </Grid>
+                            <Grid xs="12" item>
+                              <span className="font-italic">{webmon.webmon}</span>  
                             </Grid>
                             <Grid xs="12" item>
                               <span style={{color:colorRating(webmon.rating)}}>
@@ -604,7 +652,7 @@ class UsersTabs extends React.Component{
                           </Grid>
                         </CardContent>
                         <CardActions className={classes.noButtonOutline}>
-                          <Button variant="text" color="default">
+                          <Button variant="text" color="default" onClick={()=>{this.handleEditUserWebmon(webmon)}}>
                             Edit
                           </Button>
                           <Button variant="text" color="secondary" onClick={()=>{this.handleDeleteUserWebmon(webmon.id)}}>

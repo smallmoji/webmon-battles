@@ -203,7 +203,7 @@ public class UserServiceImpl implements UserService {
 		return resultMap;
 	}
 	
-	public HashMap<String, Object> newUserWebmon(Long userId, Long webmonId, String name){
+	public HashMap<String, Object> newUserWebmon(Long userId, Long webmonId, String name, Long level){
 		HashMap<String,Object> resultMap = new HashMap<>();
 		UserWebmon newUsermon = new UserWebmon();
 		
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
 				}else {
 					newUsermon.setName(name);
 				}
-				newUsermon.setLevel((long) 1);
+				newUsermon.setLevel(level);
 				UserWebmon savedUsermon = userWebmonRepository.save(newUsermon);
 				
 				if(userWebmonRepository.existsById(savedUsermon.getId())) {
@@ -295,6 +295,7 @@ public class UserServiceImpl implements UserService {
 						tempResult.put("name", userWebmon.getName());
 						tempResult.put("level", userWebmon.getLevel());
 						tempResult.put("webmon", userWebmon.getWebmon().getName());
+						tempResult.put("webmonId", userWebmon.getWebmon().getWebmonId());
 						tempResult.put("type", userWebmon.getWebmon().getType());
 						tempResult.put("rating", userWebmon.getWebmon().getRating());
 						tempResult.put("attribute", userWebmon.getWebmon().getAttribute());
