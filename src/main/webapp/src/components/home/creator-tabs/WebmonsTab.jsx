@@ -20,7 +20,7 @@ import '../../../css/override-ej2.css';
 import { colorRating } from  '../../../js/common';
 
 const styles = theme => ({
-    root: {
+  root: {
     '& button:focus': {
       outline:'none'
     }

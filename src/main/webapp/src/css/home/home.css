@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
+.profile-bar{
+  background-color: #3A4454;
+  height:100%;
+  padding:12px 20px;
+}
+.logo-word{
+  color:#fff;
+  font-size: 1.5rem;
+  font-family: 'Staatliches', cursive;
+}

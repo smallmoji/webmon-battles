@@ -8,10 +8,16 @@ function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className="main">
-        <AppRouter/>
+      <div className="d-flex flex-column">
+         <div className="main" style={{minHeight:"100vh"}}>
+          <AppRouter/>
+        </div>
+        <div>
+          <Footer />
+        </div>
+        
       </div>
-      <Footer />
+     
     </React.Fragment>
     
   );

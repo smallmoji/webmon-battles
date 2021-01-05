@@ -26,4 +26,7 @@ public interface UserService {
 	HashMap<String, Object> updateUserWebmon(UserWebmon userWebmon);
 	
 	HashMap<String, Object> getScaledUserWebmons(Long userId);
+	
+	HashMap<String, Object> getEntitiesCounts();
+	
 }

@@ -95,5 +95,10 @@ public class HomeController {
 		return userService.getScaledUserWebmons(userId);
 	}
 	
+	@RequestMapping("getEntitiesCount")
+	HashMap<String, Object> getEntitiesCounts(){
+		return userService.getEntitiesCounts();
+	}
+	
 	
 }

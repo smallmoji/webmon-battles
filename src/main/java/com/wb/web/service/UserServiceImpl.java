@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.wb.web.model.User;
 import com.wb.web.model.UserWebmon;
 import com.wb.web.model.Webmon;
+import com.wb.web.repository.SkillRepository;
 import com.wb.web.repository.UserRepository;
 import com.wb.web.repository.UserWebmonRepository;
 import com.wb.web.repository.WebmonRepository;
@@ -25,6 +26,8 @@ public class UserServiceImpl implements UserService {
 	UserWebmonRepository userWebmonRepository;
 	@Autowired
 	WebmonRepository webmonRepository;
+	@Autowired
+	SkillRepository skillRepository;
 	
 	public HashMap<String, Object> checkUsername(String userName){
 		HashMap<String, Object> resultMap = new HashMap<>();
@@ -321,6 +324,25 @@ public class UserServiceImpl implements UserService {
 			resultMap.put("result", "failed");
 			resultMap.put("error", e.getMessage());
 		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> getEntitiesCounts(){
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+			long usersCount = userRepository.count();
+			long webmonsCount = webmonRepository.count();
+			long skillsCount = skillRepository.count();
+			
+			resultMap.put("result", "success");
+			resultMap.put("usersCount", usersCount);
+			resultMap.put("webmonsCount", webmonsCount);
+			resultMap.put("skillsCount", skillsCount);
+		} catch (Exception e) {
+			resultMap.put("result", "failed");
+			resultMap.put("error", e.getMessage());
+		}
+		
 		return resultMap;
 	}
 	
