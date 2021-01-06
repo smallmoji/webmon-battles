@@ -3,10 +3,12 @@
 .profile-bar{
   background-color: #3A4454;
   height:100%;
-  padding:12px 20px;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .logo-word{
-  color:#fff;
+  color:#e9e9e9;
   font-size: 1.5rem;
   font-family: 'Staatliches', cursive;
 }

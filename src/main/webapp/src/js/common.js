@@ -7,7 +7,7 @@
         return '#3b0000'
       case 'Legendary':
         return '#FFD500'
-      case 'Unique':
+      case 'Epic':
         return '#9C27B0'
       case 'Rare':
         return '#3F51B5'
