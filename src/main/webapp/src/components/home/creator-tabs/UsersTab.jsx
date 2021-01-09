@@ -23,15 +23,16 @@ import { colorRating } from  '../../../js/common';
 
 const styles = theme => ({
   noButtonOutline: {
-  '& button:focus': {
-    outline:'none'
+    '& button:focus': {
+      outline:'none'
+    }
   }
-}
 });
 class UsersTabs extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      readOnly: this.props.isShow,  
       users:[],
       webmons:[],
       userWebmons:[],
@@ -399,9 +400,9 @@ class UsersTabs extends React.Component{
   return (
     <Grid container className={classes.templateGrid}>
       <Grid item sm="1" className="d-none d-sm-block">{props.id}</Grid>
-      <Grid item xs="7" sm="3">{props.name}</Grid>
-      <Grid item sm="4" className="d-none d-sm-block">{props.email}</Grid>
-      <Grid item xs="2" sm="2">
+      <Grid item xs="7" sm={this.state.readOnly ? "4" : "3"}>{props.name}</Grid>
+      <Grid item sm={this.state.readOnly ? "4" : "3"} className="d-none d-sm-block">{props.email}</Grid>
+      <Grid item xs="2" sm="2" >
         <Tooltip title="Show owned webmons" arrow>
             <IconButton size="small" color="primary"
               onClick={()=>{this.handleOpenWebmonsDialog(props)}}>
@@ -409,6 +410,7 @@ class UsersTabs extends React.Component{
             </IconButton>
           </Tooltip>
       </Grid>
+    {!this.state.readOnly ?
       <Grid item xs="3" sm="2">
         <div>
           <Tooltip title="Edit" arrow>
@@ -425,7 +427,7 @@ class UsersTabs extends React.Component{
             </IconButton>
           </Tooltip>
         </div>
-      </Grid>
+      </Grid> : null }
     </Grid>
     );
   }
@@ -437,11 +439,12 @@ class UsersTabs extends React.Component{
     return(
       <div className={classes.root}>
         <div>
+          {!this.state.readOnly ? 
           <div className=" text-right mb-2">
             <Button size="small" variant="contained" color="primary" onClick={()=>{this.setState({openDialog:true})}}>
               Add User <AddIcon fontSize="small"/>
             </Button>
-          </div>
+          </div> : null}
 
           <Dialog maxWidth="sm" open={this.state.openDialog} onClose={this.handleCloseDialog.bind(this)}>
             <DialogTitle>{this.state.isCreateDialog ? "Create New User" : "Edit User"}</DialogTitle>
@@ -486,24 +489,15 @@ class UsersTabs extends React.Component{
               </Button>
             </DialogActions>
           </Dialog>
-          <Snackbar
-            open={this.state.snackBarSuccess}
-            autoHideDuration={4000}
-            onClose={()=>{this.setState({snackBarSuccess:false})}}
-          >
-            <MuiAlert elevation={6} variant="filled" onClose={()=>{this.setState({snackBarSuccess:false})}} severity="success">
-              {this.state.snackBarMessage} 
-            </MuiAlert>
 
-          </Snackbar>
           <div className="grid-group">
             <div className="grid-header e-grid">
                 <Grid container>
                   <Grid item sm="1" className="d-none d-sm-block">ID</Grid>
-                  <Grid item xs="7" sm="3">Name</Grid>
-                  <Grid item sm="4" className="d-none d-sm-block">Email</Grid>
+                  <Grid item xs="7"sm={this.state.readOnly ? "4" : "3"}>Name</Grid>
+                  <Grid item sm={this.state.readOnly ? "4" : "3"} className="d-none d-sm-block">Email</Grid>
                   <Grid item xs="2" className="d-none d-sm-block" sm="2">Webmons</Grid>
-                  <Grid item xs="4" sm="2">Action</Grid>
+                  {!this.state.readOnly ? <Grid item xs="4" sm="2">Action</Grid> : null}
                 </Grid>
               </div>
             <GridComponent 
@@ -546,9 +540,10 @@ class UsersTabs extends React.Component{
 
         <Dialog maxWidth="sm" className={classes.noButtonOutline} open={this.state.openWebmonsDialog} onClose={this.handleCloseWebmonsDialog.bind(this)}>
           <DialogTitle>User Webmons 
+             {!this.state.readOnly ? 
             <IconButton className="float-right" onClick={this.handleOpenAddUmon.bind(this)}>
               <AddCircleOutlineIcon />
-            </IconButton>
+            </IconButton> : null }
           </DialogTitle>
           <DialogContent >
           
@@ -651,6 +646,7 @@ class UsersTabs extends React.Component{
                             </Grid>
                           </Grid>
                         </CardContent>
+                        {!this.state.readOnly ? 
                         <CardActions className={classes.noButtonOutline}>
                           <Button variant="text" color="default" onClick={()=>{this.handleEditUserWebmon(webmon)}}>
                             Edit
@@ -658,7 +654,7 @@ class UsersTabs extends React.Component{
                           <Button variant="text" color="secondary" onClick={()=>{this.handleDeleteUserWebmon(webmon.id)}}>
                             Delete
                           </Button>
-                        </CardActions>
+                        </CardActions> : null }
                       </Card>
                     </Grid> 
                 })}
@@ -671,6 +667,16 @@ class UsersTabs extends React.Component{
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Snackbar
+          open={this.state.snackBarSuccess}
+          autoHideDuration={4000}
+          onClose={()=>{this.setState({snackBarSuccess:false})}}
+        >
+          <MuiAlert elevation={6} variant="filled" onClose={()=>{this.setState({snackBarSuccess:false})}} severity="success">
+            {this.state.snackBarMessage} 
+          </MuiAlert>
+        </Snackbar>
       </div>
       
     )

@@ -42,9 +42,11 @@ class WebmonsTab extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      readOnly: this.props.isShow,  
       webmons:[],
       webmonsCount:0,
       openDialog: false,
+      openDeleteDialog: false,
       isCreateDialog: true,
       dialogProgress:false,
       formErrorMessage:"",
@@ -287,27 +289,27 @@ class WebmonsTab extends React.Component{
     const { classes } = this.props;
     return (
       <Grid container className={classes.templateGrid}>
-        <Grid item sm="1" className="d-none d-sm-flex">{props.webmonId}</Grid>
-        <Grid item xs="7" sm="3">{props.name}</Grid>
-        <Grid item sm="2" className="d-none d-sm-flex" style={{color:colorRating(props.rating)}}>{props.rating}</Grid>
-        <Grid item sm="2" className="d-none d-sm-flex">{props.type}</Grid>
-        <Grid item sm="2" className="d-none d-sm-flex">{props.attribute}</Grid>
-        <Grid item xs="5" sm="2">
-          <div>
-            <Tooltip title="Edit" arrow>
-              <IconButton size="small" color="primary" 
-                onClick={()=>{this.handleOpenEditDialog(props)}}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete" arrow>
-              <IconButton onClick={()=>{this.handleOpenDeleteDialog(props)}} size="small" color="secondary">
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-            
-          </div>
-        </Grid>
+        <Grid item sm={1} className="d-none d-sm-flex">{props.webmonId}</Grid>
+        <Grid item xs={7} sm={this.state.readOnly ? 5 : 3}>{props.name}</Grid>
+        <Grid item sm={2} className="d-none d-sm-flex" style={{color:colorRating(props.rating)}}>{props.rating}</Grid>
+        <Grid item sm={2} className="d-none d-sm-flex">{props.type}</Grid>
+        <Grid item sm={2} className="d-none d-sm-flex">{props.attribute}</Grid>
+        {!this.state.readOnly ?
+          <Grid item xs={5} sm={2}>
+            <div>
+              <Tooltip title="Edit" arrow>
+                <IconButton size="small" color="primary" 
+                  onClick={()=>{this.handleOpenEditDialog(props)}}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete" arrow>
+                <IconButton onClick={()=>{this.handleOpenDeleteDialog(props)}} size="small" color="secondary">
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+          </Grid> : null }
       </Grid>
       );
     }
@@ -316,9 +318,10 @@ class WebmonsTab extends React.Component{
       return(
         <div className={classes.root}>
             <div className="text-right mb-2">
-              <Button size="small" variant="contained" color="primary" onClick={this.handleOpenDialog.bind(this)}>
-                Add Webmon <AddIcon fontSize="small"/>
-              </Button>
+              {!this.state.readOnly ?
+                <Button size="small" variant="contained" color="primary" onClick={this.handleOpenDialog.bind(this)}>
+                  Add Webmon <AddIcon fontSize="small"/>
+                </Button> : null}
             
               <Dialog 
                open={this.state.openDialog} 
@@ -461,29 +464,18 @@ class WebmonsTab extends React.Component{
                     Cancel
                   </Button>
                 </DialogActions>
-              </Dialog>
-
-              <Snackbar
-                open={this.state.snackBarSuccess}
-                autoHideDuration={4000}
-                onClose={()=>{this.setState({snackBarSuccess:false})}}
-              >
-                <MuiAlert elevation={6} variant="filled" onClose={()=>{this.setState({snackBarSuccess:false})}} severity="success">
-                  {this.state.snackBarMessage} 
-                </MuiAlert>
-
-              </Snackbar>
+              </Dialog>              
             </div>    
             
             <div className="grid-group">
               <div className="grid-header e-grid">
                 <Grid container>
-                  <Grid item sm="1" className="d-none d-sm-block">ID</Grid>
-                  <Grid item xs="7" sm="3">Name</Grid>
-                  <Grid item sm="2" className="d-none d-sm-block">Rating</Grid>
-                  <Grid item sm="2" className="d-none d-sm-block">Type</Grid>
-                  <Grid item sm="2" className="d-none d-sm-block">Attribute</Grid>
-                  <Grid item xs="5" sm="2">Action</Grid>
+                  <Grid item sm={1} className="d-none d-sm-block">ID</Grid>
+                  <Grid item xs={7} sm={this.state.readOnly ? 5 : 3}>Name</Grid>
+                  <Grid item sm={2} className="d-none d-sm-block">Rating</Grid>
+                  <Grid item sm={2} className="d-none d-sm-block">Type</Grid>
+                  <Grid item sm={2} className="d-none d-sm-block">Attribute</Grid>
+                  {!this.state.readOnly ? <Grid item xs={5} sm={2}>Action</Grid> : null}
                 </Grid>
               </div>
               <GridComponent 
@@ -520,6 +512,16 @@ class WebmonsTab extends React.Component{
                 </Button>
               </DialogActions>
             </Dialog> 
+
+            <Snackbar
+              open={this.state.snackBarSuccess}
+              autoHideDuration={4000}
+              onClose={()=>{this.setState({snackBarSuccess:false})}}
+            >
+              <MuiAlert elevation={6} variant="filled" onClose={()=>{this.setState({snackBarSuccess:false})}} severity="success">
+                {this.state.snackBarMessage} 
+              </MuiAlert>
+            </Snackbar>
         </div>
       )
     }

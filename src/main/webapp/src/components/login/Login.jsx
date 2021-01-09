@@ -6,7 +6,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import {ReactComponent as WebmonBattles } from '../../misc/images/webmon-battles.svg';
 import $ from 'jquery';
 import { Redirect } from "react-router-dom";
-
+import dragon from '../../misc/images/dragon.png';
 
 export default class Login extends React.Component{
   constructor(props){
@@ -58,16 +58,17 @@ export default class Login extends React.Component{
       contentType: false,
       type: "POST",
       success: function(response){
+        console.log("response" + response.role);
         if(response.result === "success"){
           if(response.role === "user"){
             self.setState({redirect: "/home", homeState:{
               role: "user",
-              id : response.user.userId
+              id : response.user.id
             }}) 
           }else{
             self.setState({redirect: "/home", homeState:{
               role: "creator",
-              id: 0
+              id: 3
             }})  
           }
           
@@ -96,8 +97,9 @@ export default class Login extends React.Component{
     
     return(
       <div className="login-main">
-        <div className="container flex-center h-100">
-          <Paper>
+        <div className="container flex-center h-100 position-relative">
+          <img className="login-dragon" src={dragon} />
+          <Paper style={{zIndex:"1"}}>
             <div className="login-box">
               <WebmonBattles  style={{height:"100px",width:"100%"}}/>
               <div className="text-center mt-2">
@@ -105,21 +107,27 @@ export default class Login extends React.Component{
                 <button className="orange-button" onClick={(this.selectUser.bind(this))}>User</button>
               </div>
 
-              <div className="user-select-wrapper mt-3" >
+              <div className="user-select-wrapper mt-3 px-5" >
                
                 <form onSubmit={this.handleLogin.bind(this)} id="form" className="user-select" ref={(el) => this.myFormRef = el}>
 
                   <div className="alert alert-danger" style={{display: this.state.errorMessage ? "block" : "none"}}>{this.state.errorMessage}</div>
 
+                  {this.state.isUser ? 
+                    <div className="text-center">
+                      <input type="text" className="form-control" placeholder="Username" name="username" />
 
-                  <div className="input-group">
-                    <input type={ this.state.isUser ? "text" : "password"} className="form-control" placeholder={ this.state.isUser ? "Username" : "Creator Pass"} name={ this.state.isUser ? "username" : "creatorCode"} />
+                      <input type="password" className="form-control mt-2" placeholder="Password" name="password" />
+                      <button type="submit" className="btn btn-primary mt-2">Login</button>
+                    </div> : 
+                    <div className="input-group">
+                      <input type="password" className="form-control" placeholder="Creator Pass" name="creatorCode" />
 
-                    
-                    <div className="input-group-append">
-                      <button className={this.state.isUser ? "btn btn-success" : "btn btn-primary"} type="submit" ><ArrowForwardIcon/></button>
-                    </div>
-                  </div>
+                      
+                      <div className="input-group-append">
+                        <button className="btn btn-primary" type="submit" ><ArrowForwardIcon/></button>
+                      </div>
+                    </div>}
 
                 </form>
                 <LinearProgress className="mt-3" className="mt-3" style={{display: this.state.progressBar ? "block":"none"}} />
