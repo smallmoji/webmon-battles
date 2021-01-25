@@ -15,6 +15,9 @@ import org.hibernate.annotations.OnDelete;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
+import com.wb.web.model.properties.WebmonAttribute;
+import com.wb.web.model.properties.WebmonRating;
+import com.wb.web.model.properties.WebmonType;
 
 
 @Entity
@@ -23,22 +26,22 @@ public class Webmon extends AuditModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotNull
+
     @Column(unique = true)
 	private String name;
-	@NotNull
+
 	private String rating;
-	@NotNull
+
 	private String type;
-	@NotNull
+
 	private String attribute;
-	@NotNull
+
 	private Long attack;
-	@NotNull
+
 	private Long health;
-	@NotNull
+
 	private Long physicalDefense;
-	@NotNull
+
 	private Long magicDefense;
 	
 	@OneToMany(

@@ -3,11 +3,11 @@ package com.wb.web.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.wb.web.model.User;
@@ -29,11 +29,12 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	SkillRepository skillRepository;
 	
+	
 	public HashMap<String, Object> checkUsername(String userName){
 		HashMap<String, Object> resultMap = new HashMap<>();
 		
 		try {
-			User user = userRepository.findByName(userName);
+			User user = userRepository.findByUsername(userName);
 			if(user != null) {
 				resultMap.put("result", "success");
 				resultMap.put("role","user");
@@ -94,17 +95,24 @@ public class UserServiceImpl implements UserService {
 		
 		return resultMap;
 	}
+	
 	public HashMap<String,Object> newUser(User user){
 		HashMap<String, Object> resultMap = new HashMap<>();
 		try {
-			userRepository.save(user);
-			resultMap.put("result", "success");
+			if(userRepository.existsByUsername(user.getUsername())) {
+				resultMap.put("result", "failed");
+				resultMap.put("error", "Username already exists.");
+			}else {
+				String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+				user.setPassword(encryptedPassword);
+				userRepository.save(user);
+				resultMap.put("result", "success");
+			}
+			
 		} catch (Exception e) {
 			resultMap.put("result","failed");
 			resultMap.put("error", e.getMessage());
 		}
-		
-		
 		
 		return resultMap;
 	}

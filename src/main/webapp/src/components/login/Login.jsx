@@ -1,9 +1,11 @@
 import React from 'react';
 import '../../css/login/login.css';
 import '../../css/common.css';
-import { Paper, LinearProgress} from '@material-ui/core'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import {ReactComponent as WebmonBattles } from '../../misc/images/webmon-battles.svg';
+import { Paper, LinearProgress, Grid, Typography} from '@material-ui/core'
+import PersonIcon from '@material-ui/icons/Person';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import LockIcon from '@material-ui/icons/Lock';
+import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import { Redirect } from "react-router-dom";
 import dragon from '../../misc/images/dragon.png';
@@ -21,17 +23,13 @@ export default class Login extends React.Component{
     }
   }
 
-  selectUser(){
-    if(!this.state.isUser){
-      this.setState({isUser:true});
-      this.resetInput();
-    }
-  }
-  selectCreator(){
+  handleChangeLoginRole(){
     if(this.state.isUser){
       this.setState({isUser:false});
-      this.resetInput();
+    }else{
+      this.setState({isUser:true});
     }
+    this.resetInput();
   }
   resetInput(){
     this.myFormRef.reset();
@@ -42,11 +40,9 @@ export default class Login extends React.Component{
     e.preventDefault();
     const self = this;
     let formData = new FormData(e.target);
-    let url = "checkUsername";
+    let url = "signin";
 
-    if(this.state.isUser){
-      url = "checkUsername";
-    }else{
+    if(!this.state.isUser){
       url = "checkCreator";
     }
 
@@ -97,44 +93,52 @@ export default class Login extends React.Component{
     
     return(
       <div className="login-main">
-        <div className="container flex-center h-100 position-relative">
-          <img className="login-dragon" src={dragon} />
-          <Paper style={{zIndex:"1"}}>
-            <div className="login-box">
-              <WebmonBattles  style={{height:"100px",width:"100%"}}/>
-              <div className="text-center mt-2">
-                <button className="orange-button mr-2" onClick={(this.selectCreator.bind(this))}>Creator</button>
-                <button className="orange-button" onClick={(this.selectUser.bind(this))}>User</button>
-              </div>
-
-              <div className="user-select-wrapper mt-3 px-5" >
-               
-                <form onSubmit={this.handleLogin.bind(this)} id="form" className="user-select" ref={(el) => this.myFormRef = el}>
-
-                  <div className="alert alert-danger" style={{display: this.state.errorMessage ? "block" : "none"}}>{this.state.errorMessage}</div>
-
-                  {this.state.isUser ? 
-                    <div className="text-center">
-                      <input type="text" className="form-control" placeholder="Username" name="username" />
-
-                      <input type="password" className="form-control mt-2" placeholder="Password" name="password" />
-                      <button type="submit" className="btn btn-primary mt-2">Login</button>
-                    </div> : 
-                    <div className="input-group">
-                      <input type="password" className="form-control" placeholder="Creator Pass" name="creatorCode" />
-
-                      
-                      <div className="input-group-append">
-                        <button className="btn btn-primary" type="submit" ><ArrowForwardIcon/></button>
-                      </div>
-                    </div>}
-
-                </form>
-                <LinearProgress className="mt-3" className="mt-3" style={{display: this.state.progressBar ? "block":"none"}} />
-              </div>
+        <div className="login-box-wrapper flex-center">
+          <div className="login-box">
+            {/* <WebmonBattles  style={{height:"100px",width:"100%"}}/> */}
+            <div className="flex-center mt-2">
+            <button className="round-button" onClick={(this.handleChangeLoginRole.bind(this))}> {this.state.isUser ? <PersonIcon /> : <SupervisorAccountIcon /> }</button>
+              {/* <button className="orange-button" onClick={(this.selectUser.bind(this))}>User</button> */}
             </div>
-          </Paper>
+            <div className="login-welcome mt-3">Welcome {this.state.isUser ? "Trainer" : "Creator"}</div>
+            <div className="user-select-wrapper mt-3" >
+            
+              <form onSubmit={this.handleLogin.bind(this)} id="form" className="user-select" ref={(el) => this.myFormRef = el}>
+
+                <div className="alert alert-danger" style={{display: this.state.errorMessage ? "block" : "none"}}>{this.state.errorMessage}</div>
+
+                {this.state.isUser ? 
+                  <div className="text-center">
+                    <div className="custom-input-group">
+                      <PersonIcon />
+                      <input type="text" className="custom-input ml-1" placeholder="Username" name="username" />
+                    </div>
+
+                    <div className="custom-input-group mt-2">
+                      <LockIcon />
+                      <input type="password" className="custom-input ml-1" placeholder="Password" name="password" />
+                    </div>
+   
+                    <button type="submit" className="custom-button mt-2">Login</button>
+                  </div> : 
+                  <div className="text-center">
+                    <div className="custom-input-group mt-2">
+                      <LockIcon />
+                      <input type="password" className="custom-input ml-1" placeholder="Creator Pass" name="creatorCode" />
+                    </div>
+                    <button type="submit" className="custom-button mt-2">Login</button>
+                  </div>}
+
+                  <div className="text-center mt-2 text-white">
+                    <Link to="/signup">Create Account</Link>
+                  </div>
+
+              </form>
+              <LinearProgress className="mt-3" className="mt-3" style={{display: this.state.progressBar ? "block":"none"}} />
+            </div>
+          </div>
         </div>
+ 
       </div>
     )
   }

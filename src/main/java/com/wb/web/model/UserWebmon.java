@@ -27,7 +27,7 @@ public class UserWebmon extends AuditModel {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Webmon webmon;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	private User user;
 	
 	@OneToMany

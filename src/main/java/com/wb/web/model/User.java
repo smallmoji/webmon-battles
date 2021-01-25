@@ -3,6 +3,7 @@ package com.wb.web.model;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,16 +12,26 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 
 import com.sun.istack.NotNull;
+import com.wb.web.model.properties.UserRoles;
 
 
 @Entity
-public class User {
+public class User extends AuditModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
 	
+	@Column(unique = true, nullable = false)
+	private String username; 
+	
+	@Column(nullable = false)
+	private String password;
+	
+	private UserRoles role;
+	
+	int enabled;
 	@Email
 	@NotNull
 	private String email;
@@ -66,6 +77,38 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public UserRoles getRole() {
+		return role;
+	}
+
+	public void setRole(UserRoles role) {
+		this.role = role;
+	}
+
+	public int getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(int enabled) {
+		this.enabled = enabled;
 	}
 
 	public Collection<UserWebmon> getUserWebmon() {

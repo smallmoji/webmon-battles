@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wb.web.model.User;
 import com.wb.web.model.UserWebmon;
+import com.wb.web.model.properties.UserRoles;
 import com.wb.web.service.UserService;
 import com.wb.web.service.WebmonService;
 
@@ -39,12 +40,27 @@ public class HomeController {
 	@RequestMapping("/createUser")
 	HashMap<String, Object> createUser(
 			@RequestParam("name")String name,
-			@RequestParam("email") String email){
+			@RequestParam("email") String email,
+			@RequestParam("username")String username,
+			@RequestParam("password")String password,
+			@RequestParam("confirmPassword")String confirmPassword){
+		if(password.equals(confirmPassword)) {
+			User user = new User();
+			user.setUsername(username);
+			user.setName(name);
+			user.setEmail(email);
+			user.setPassword(password);
+			user.setRole(UserRoles.USER);
+			user.setEnabled(1);
+			
+			return userService.newUser(user);
+		}
 		
-		User user = new User();
-		user.setName(name);
-		user.setEmail(email);
-		return userService.newUser(user);
+		HashMap<String, Object> resultMap = new HashMap<>();
+		resultMap.put("result", "failed");
+		resultMap.put("error", "Password and Confirm Password does not match.");
+		return resultMap;
+		
 	}
 	
 	@RequestMapping("/updateUser")
